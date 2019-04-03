@@ -28,17 +28,21 @@ _f	PROC
 ; 4    : 
 ; 5    :   switch (i+2) {
 
-  00006	8b 45 08	 mov	 eax, DWORD PTR _i$[ebp]
-  00009	83 c0 02	 add	 eax, 2
-  0000c	89 45 f8	 mov	 DWORD PTR tv65[ebp], eax
-  0000f	8b 4d f8	 mov	 ecx, DWORD PTR tv65[ebp]
-  00012	83 e9 01	 sub	 ecx, 1
-  00015	89 4d f8	 mov	 DWORD PTR tv65[ebp], ecx
+  00006	8b 45 08	 mov	 eax, DWORD PTR _i$[ebp] ; i -> eax
+  00009	83 c0 02	 add	 eax, 2 ; (i + 2)
+  0000c	89 45 f8	 mov	 DWORD PTR tv65[ebp], eax ; eax -> tv65
+  0000f	8b 4d f8	 mov	 ecx, DWORD PTR tv65[ebp] ; tv65 -> ecx
+  00012	83 e9 01	 sub	 ecx, 1 ; (i - 1)
+  00015	89 4d f8	 mov	 DWORD PTR tv65[ebp], ecx ; ecx -> tv65
   00018	83 7d f8 04	 cmp	 DWORD PTR tv65[ebp], 4
-  0001c	77 37		 ja	 SHORT $LN9@f
-  0001e	8b 55 f8	 mov	 edx, DWORD PTR tv65[ebp]
+  0001c	77 37		 ja	 SHORT $LN9@f ; jump to default case if (i > 5) or (i < 1)
+  0001e	8b 55 f8	 mov	 edx, DWORD PTR tv65[ebp] ; tv65 -> edx
   00021	ff 24 95 00 00
-	00 00		 jmp	 DWORD PTR $LN11@f[edx*4]
+
+; because the memory addresses in the jump table are 4 bytes, and in order, the address of the jump table with a offset of
+; (i * 4) will give the exact memory location of the line to jump to. By using jump tables, it's possible to implement a
+; switch statement with only one call to the "cmp" function.
+	00 00		 jmp	 DWORD PTR $LN11@f[edx*4] ; if i is within case range, goto jump table
 $LN4@f:
 
 ; 6    :    case 1: x = 2; break;
@@ -89,7 +93,7 @@ $LN1@f:
   0005e	5d		 pop	 ebp
   0005f	c3		 ret	 0
 $LN11@f:
-  00060	00 00 00 00	 DD	 $LN4@f
+  00060	00 00 00 00	 DD	 $LN4@f ; 
   00064	00 00 00 00	 DD	 $LN5@f
   00068	00 00 00 00	 DD	 $LN6@f
   0006c	00 00 00 00	 DD	 $LN7@f
