@@ -32,15 +32,19 @@ _f	PROC
 ; 3    : 
 ; 4    :   switch (i * 2) {
 
-  0000d	8b 45 08	 mov	 eax, DWORD PTR _i$[ebp]
-  00010	d1 e0		 shl	 eax, 1
-  00012	89 45 f8	 mov	 DWORD PTR tv65[ebp], eax
+  0000d	8b 45 08	 mov	 eax, DWORD PTR _i$[ebp] ; i -> eax
+  00010	d1 e0		 shl	 eax, 1 ; bitshift eax to muliply by 2 (i * 2)
+  00012	89 45 f8	 mov	 DWORD PTR tv65[ebp], eax ; eax -> tv65
+  ; check for case where (i * 2) = 10
   00015	83 7d f8 0a	 cmp	 DWORD PTR tv65[ebp], 10	; 0000000aH
   00019	74 0e		 je	 SHORT $LN4@f
+    ; check for case where (i * 2) = 20
   0001b	83 7d f8 14	 cmp	 DWORD PTR tv65[ebp], 20	; 00000014H
   0001f	74 11		 je	 SHORT $LN5@f
+    ; check for case where (i * 2) = 40
   00021	83 7d f8 28	 cmp	 DWORD PTR tv65[ebp], 40	; 00000028H
   00025	74 14		 je	 SHORT $LN6@f
+  ; fall out to default case
   00027	eb 1b		 jmp	 SHORT $LN7@f
 $LN4@f:
 
